@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="41.120621mm"
+   height="41.120621mm"
+   viewBox="0 0 41.120621 41.120621"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   sodipodi:docname="WC-herren-icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.0022096"
+     inkscape:cx="141.68693"
+     inkscape:cy="-71.342362"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="4472"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-67.468743,-167.48126)">
+    <g
+       id="g4-8"
+       transform="matrix(2.0299944,0,0,2.0299944,-1572.0149,27.803858)"
+       style="display:inline">
+      <g
+         id="g370-7">
+        <circle
+           style="opacity:1;fill:#0000ff;stroke-width:0.389586;stroke-linecap:round;stroke-linejoin:round"
+           id="circle362-2"
+           cx="817.65436"
+           cy="78.961266"
+           r="10" />
+        <g
+           style="display:inline;fill:#ffffff"
+           id="g971-7-8"
+           transform="matrix(0.82889024,0,0,0.82889024,543.11386,176.18543)">
+          <polygon
+             transform="matrix(0.26458333,0,0,0.26458333,323.96654,-130.52354)"
+             points="23.825,80.057 27.394,57.519 30.963,80.057 37.643,80.057 33.675,52.449 35.222,41.19 41.417,54.507 45.372,52.667 36.319,33.208 36.334,33.095 18.454,33.095 18.469,33.208 9.416,52.667 13.371,54.507 19.566,41.19 21.113,52.449 17.145,80.057 "
+             id="polygon922-0-0"
+             style="fill:#ffffff" />
+          <circle
+             style="fill:#ffffff;stroke-width:0.264583"
+             cx="331.21454"
+             cy="-123.73248"
+             r="1.514475"
+             id="circle924-8-5" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

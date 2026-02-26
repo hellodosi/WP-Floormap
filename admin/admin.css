@@ -1,0 +1,70 @@
+#wp-floormap-admin .fm-tab {
+    padding: 16px 0;
+}
+
+#wp-floormap-admin .nav-tab-wrapper {
+    margin-bottom: 0;
+}
+
+/* Editor-Seite: Scrollbalken auf Seitenebene erlauben (für das Admin-Menü), 
+   aber die Karte selbst bleibt fixiert. */
+body.wp-floormap-editor-page {
+    /* overflow: hidden entfernt, damit das Menü scrollbar bleibt */
+}
+
+/* Karten-Editor: fixierte Position, füllt den Rest des Viewports rechts neben dem Menü */
+#fm-editor-root.wp-floormap-wrap {
+    position: fixed;
+    top: 32px;
+    left: 160px;
+    right: 0;
+    bottom: 0;
+    width: auto; /* Breite dynamisch zwischen left und right berechnen */
+    height: auto;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    z-index: 10; /* Damit es über dem Content, aber unter dem Menü-Dropdowns liegt */
+}
+
+/* Anpassung für mobile Ansichten oder eingeklapptes Menü */
+@media screen and (max-width: 782px) {
+    #fm-editor-root.wp-floormap-wrap {
+        left: 0; /* Auf kleinen Bildschirmen ist das Menü oben oder ein Overlay */
+        top: 46px; /* WordPress Admin-Bar ist auf Mobile oft höher */
+    }
+    body.admin-bar #fm-editor-root.wp-floormap-wrap {
+        top: 46px;
+    }
+}
+
+/* Eingeklapptes Admin-Menü (Desktop) */
+body.folded #fm-editor-root.wp-floormap-wrap {
+    left: 36px;
+}
+
+/* Auto-Anpassung wenn das Menü fehlt (z.B. im iframe oder speziellen Views) */
+body.no-sidebar #fm-editor-root.wp-floormap-wrap {
+    left: 0;
+}
+/* Ohne Admin-Bar (z.B. bei ausgeblendetem Toolbar) */
+body.admin-bar #fm-editor-root.wp-floormap-wrap {
+    top: 32px;
+}
+body:not(.admin-bar) #fm-editor-root.wp-floormap-wrap {
+    top: 0;
+}
+/* Leaflet-Karte im Editor */
+#fm-editor-map .leaflet-container {
+    background: #f5f5f5;
+}
+
+/* Modal-Overlay */
+#fm-floor-modal {
+    display: none;
+}
+
+/* Icons-Grid */
+#fm-icons-grid img {
+    display: block;
+}

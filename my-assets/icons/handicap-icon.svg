@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="41.120621mm"
+   height="41.120621mm"
+   viewBox="0 0 41.120621 41.120621"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   sodipodi:docname="handicap-icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.0022096"
+     inkscape:cx="141.68693"
+     inkscape:cy="-71.342362"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="4472"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g383" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-67.468743,-167.48126)">
+    <g
+       id="g383"
+       transform="matrix(2.0431944,0,0,2.0431944,-1537.7758,26.579989)"
+       style="display:inline">
+      <g
+         style="display:inline;fill:#000000"
+         id="g382"
+         transform="matrix(0.26740095,0,0,0.26740095,699.5759,37.385675)">
+        <g
+           id="g381"
+           style="fill:#000000">
+          <g
+             id="g380"
+             transform="translate(309.28572,105.71429)"
+             style="fill:#000000">
+            <path
+               inkscape:connector-curvature="0"
+               d="M 72.743,71.098 63.513,50.24 H 41.993 L 41.574,44.695 H 55.23 V 39.477 H 41.18 L 40.293,27.75 c 3.38,-0.019 6.115,-2.764 6.115,-6.148 0,-3.397 -2.754,-6.15 -6.15,-6.15 -3.396,0 -6.15,2.754 -6.15,6.15 0,1.029 0.256,1.996 0.702,2.848 l 2.346,31.01 H 60.118 L 70.02,77.84 79.696,73.904 77.73,69.07 Z"
+               id="path379"
+               style="fill:#000000" />
+            <path
+               inkscape:connector-curvature="0"
+               d="m 44.272,79.345 c -10.046,0 -18.22,-8.12 -18.22,-18.099 0,-6.095 3.063,-11.485 7.738,-14.763 l -0.44,-5.811 c -7.44,3.912 -12.538,11.656 -12.538,20.574 0,12.849 10.525,23.304 23.46,23.304 8.788,0 16.439,-4.849 20.451,-11.979 l -2.897,-6.549 c -2.116,7.667 -9.18,13.323 -17.554,13.323 z"
+               id="path380"
+               style="fill:#000000" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
