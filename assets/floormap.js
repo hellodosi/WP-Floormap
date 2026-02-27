@@ -199,7 +199,10 @@ function WPFloormapInit(mapId, APP_CONFIG, API_BASE, THEME, INITIAL_FIND, IS_DEV
     previewLayer   = L.layerGroup().addTo(map);
 
     map.zoomControl.setPosition('bottomright');
-    map.on('zoomend', function() { updateLabelVisibility(); updateIconSizes(); });
+    map.on('zoomend', function() { 
+        updateLabelVisibility(); 
+        updateIconSizes(); 
+    });
 
     if (IS_DEV_MODE) {
         map.on('zoom', function() {
@@ -292,6 +295,7 @@ function WPFloormapInit(mapId, APP_CONFIG, API_BASE, THEME, INITIAL_FIND, IS_DEV
         } catch(e) { allFloorsCache[fId] = { name: fId, imageUrl: '', elements: [] }; }
     }
 
+
     async function switchFloor(fId, keepView) {
         var info = APP_CONFIG.floors.find(function(f) { return f.id === fId; });
         if (!info) return;
@@ -311,10 +315,16 @@ function WPFloormapInit(mapId, APP_CONFIG, API_BASE, THEME, INITIAL_FIND, IS_DEV
                 var img = new Image();
                 img.onload = function() {
                     var bounds = L.latLngBounds([0, 0], [info.height, info.width]);
+                    
                     if (currentOverlay) map.removeLayer(currentOverlay);
                     currentOverlay = L.imageOverlay(config.imageUrl, bounds).addTo(map);
-                    if (keepView && savedCenter && savedZoom !== null) map.setView(savedCenter, savedZoom);
-                    else map.fitBounds(bounds);
+
+                    if (keepView && savedCenter && savedZoom !== null) {
+                        map.setView(savedCenter, savedZoom);
+                    } else {
+                        map.fitBounds(bounds);
+                    }
+                    
                     drawElements(config.elements);
                     updateLabelVisibility();
                     updateSearchResults(searchVal, true);

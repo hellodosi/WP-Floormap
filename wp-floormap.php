@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP Floormap
- * Plugin URI:  https://github.com/your-repo/wp-floormap
+ * Plugin URI:  https://github.com/hellodosi/WP-Floormap
  * Description: Interaktive Gebäudekarte als WordPress-Plugin. Stockwerke und Kartenelemente werden in der WordPress-Datenbank gespeichert. Die Karte kann als Shortcode, Widget oder Elementor-Widget eingebunden werden.
  * Version:     1.0.0
  * Author:      Your Name
@@ -39,6 +39,9 @@ function wp_floormap_init() {
 
     // REST API
     add_action( 'rest_api_init', array( 'WP_Floormap_API', 'register_routes' ) );
+
+    // Update Checker initialisieren
+    wp_floormap_init_updater();
 
     // Shortcode registrieren
     WP_Floormap_Shortcode::init();
@@ -84,3 +87,18 @@ function wp_floormap_ensure_upload_dirs() {
     }
 }
 add_action( 'admin_init', 'wp_floormap_ensure_upload_dirs' );
+
+/**
+ * Initialisiert den Update-Checker für das Plugin.
+ */
+function wp_floormap_init_updater() {
+    $puc_path = WP_FLOORMAP_PLUGIN_DIR . 'plugin-update-checker/plugin-update-checker.php';
+    if ( file_exists( $puc_path ) ) {
+        require_once $puc_path;
+        $myUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+            'https://github.com/hellodosi/WP-Floormap/',
+            __FILE__,
+            'wp-floormap'
+        );
+    }
+}

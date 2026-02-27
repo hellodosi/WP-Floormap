@@ -519,9 +519,46 @@ class WP_Floormap_API {
     // ========== MAP UPLOAD ==========
 
     /**
+     * Einfache SVG-Optimierung: Entfernt Metadaten, Kommentare und unnötige XML-Namespaces (z.B. Inkscape/Sodipodi).
+     * Reduziert die Dateigröße und vereinfacht das Rendering im Browser, während die Dimensionen erhalten bleiben.
+     */
+    private static function optimize_svg( $svg_content ) {
+        // 1. Kommentare entfernen
+        $svg_content = preg_replace( '/<!--.*?-->/s', '', $svg_content );
+
+        // 2. Metadaten-Tags entfernen (<metadata>...</metadata>)
+        $svg_content = preg_replace( '/<metadata>.*?<\/metadata>/is', '', $svg_content );
+
+        // 3. Unnötige Attribute und Namespaces entfernen
+        // Wir lassen xmlns, viewBox, width, height explizit in Ruhe, falls sie in den Namespaces auftauchen könnten (unwahrscheinlich aber sicherheitshalber)
+        $svg_content = preg_replace( '/\s*(xmlns:inkscape|xmlns:sodipodi|xmlns:dc|xmlns:cc|xmlns:rdf|inkscape:[a-z-]+|sodipodi:[a-z-]+)=["\'][^"\']*["\']/i', '', $svg_content );
+
+        // 4. Mehrfache Leerzeichen und Zeilenumbrüche minimieren (einfaches Minifying)
+        // Aber Vorsicht: Leerzeichen innerhalb von Texten (Tags) sollten erhalten bleiben. 
+        // Wir machen hier nur ein sehr vorsichtiges Minifying.
+        $svg_content = preg_replace( '/>\s+</', '><', $svg_content );
+        $svg_content = trim( $svg_content );
+
+        return $svg_content;
+    }
+
+    /**
+     * Prüft, ob ein bestimmtes Bildformat vom aktuellen Editor unterstützt wird.
+     */
+    private static function supports_format( $format ) {
+        // wp_get_image_editor gibt uns einen Editor, wir prüfen ob er das Format speichern kann.
+        // Da wir nicht jedes Mal einen Editor instanziieren wollen, nutzen wir die Klassen-Methoden falls möglich,
+        // oder verlassen uns auf die Standard-WP-Funktionen.
+        if ( $format === 'image/webp' ) {
+            return function_exists( 'imagewebp' ) || ( class_exists( 'Imagick' ) && method_exists( 'Imagick', 'queryFormats' ) && in_array( 'WEBP', Imagick::queryFormats() ) );
+        }
+        return true; // Grundformate wie JPG/PNG setzen wir voraus
+    }
+
+    /**
      * Kartenbild für ein bestimmtes Stockwerk hochladen.
-     * Dateiname: floor_{id}.{ext} – überschreibt vorhandene Datei mit anderem Format.
-     * Aktualisiert image_url in der Datenbank.
+     * Konvertiert nach WebP (falls möglich).
+     * Aktualisiert image_url, width und height in der Datenbank.
      */
     public static function upload_floor_map( $request ) {
         $floor_id = intval( $request->get_param( 'id' ) );
@@ -548,39 +585,127 @@ class WP_Floormap_API {
             return new WP_Error( 'invalid_ext', 'Nur JPG, PNG, WebP und SVG erlaubt', array( 'status' => 400 ) );
         }
 
-        $dirs     = wp_floormap_upload_dir();
+        $dirs = wp_floormap_upload_dir();
+        $floor_dir = $dirs['maps'] . '/floor_' . $floor_id;
 
-        // Verzeichnis anlegen falls nicht vorhanden
-        if ( ! file_exists( $dirs['maps'] ) ) {
-            wp_mkdir_p( $dirs['maps'] );
+        // Altes Verzeichnis löschen falls vorhanden (Bereinigung)
+        if ( file_exists( $floor_dir ) ) {
+            WP_Floormap_Database::recursive_rmdir( $floor_dir );
         }
-
-        $basename = 'floor_' . $floor_id;
-
-        // Alte Dateien mit anderem Format löschen
-        foreach ( $allowed_exts as $old_ext ) {
-            $old_path = $dirs['maps'] . '/' . $basename . '.' . $old_ext;
-            if ( file_exists( $old_path ) ) {
-                @unlink( $old_path );
+        wp_mkdir_p( $floor_dir );
+        
+        // Legacy-Altdatei (vor Struktur-Update) bereinigen, falls in der DB noch ein alter Pfad stand
+        $existing = WP_Floormap_Database::get_floor_by_id( $floor_id );
+        if ( $existing && ! empty( $existing['image_url'] ) ) {
+            $prev_path = wp_floormap_upload_dir()['maps'] . '/' . basename( parse_url( $existing['image_url'], PHP_URL_PATH ) );
+            if ( file_exists( $prev_path ) && strpos( $prev_path, $floor_dir ) === false ) {
+                @unlink( $prev_path );
             }
         }
 
-        $filename = $basename . '.' . $ext;
-        $target   = $dirs['maps'] . '/' . $filename;
+        $source_path = $file['tmp_name'];
+        
+        // Bildgröße ermitteln
+        $width = 0;
+        $height = 0;
+        
+        if ( $ext === 'svg' ) {
+            // SVG Größe auslesen & Optimieren
+            $svg_content = file_get_contents( $source_path );
+            
+            // Maße ermitteln - Robusterer Regex für viewBox (unterstützt Dezimalzahlen)
+            if ( preg_match( '/viewBox=["\'](-?[\d.]+\s+-?[\d.]+\s+([\d.]+)\s+([\d.]+))["\']/', $svg_content, $matches ) ) {
+                $width = floatval( $matches[2] );
+                $height = floatval( $matches[3] );
+            } elseif ( preg_match( '/width=["\']([\d.]+)(?:px|mm|cm|in|pt|pc)?["\']/', $svg_content, $matches_w ) && preg_match( '/height=["\']([\d.]+)(?:px|mm|cm|in|pt|pc)?["\']/', $svg_content, $matches_h ) ) {
+                $width = floatval( $matches_w[1] );
+                $height = floatval( $matches_h[1] );
+            }
 
-        if ( ! move_uploaded_file( $file['tmp_name'], $target ) ) {
-            return new WP_Error( 'upload_failed', 'Datei konnte nicht gespeichert werden', array( 'status' => 500 ) );
+            // Falls wir Breite/Höhe haben, aber keine viewBox, fügen wir eine hinzu, 
+            // um eine konsistente Skalierung im Browser zu garantieren.
+            if ( $width > 0 && $height > 0 && ! preg_match( '/viewBox=/i', $svg_content ) ) {
+                $svg_content = preg_replace( '/<svg/i', '<svg viewBox="0 0 ' . $width . ' ' . $height . '"', $svg_content, 1 );
+            }
+
+            // SVG optimieren und speichern (direkt als SVG lassen)
+            $svg_content = self::optimize_svg( $svg_content );
+            file_put_contents( $source_path, $svg_content );
+        } else {
+            $image_info = getimagesize( $source_path );
+            if ( $image_info ) {
+                $width = $image_info[0];
+                $height = $image_info[1];
+            }
         }
 
-        $url = $dirs['maps_url'] . '/' . $filename;
+        // 1. Gesamtbild speichern (bevorzugt WebP für Rasterbilder, SVG als SVG lassen)
+        $use_webp = self::supports_format( 'image/webp' );
+        
+        // Ziel-Endung/MIME sauber bestimmen
+        if ( $ext === 'svg' ) {
+            $main_ext  = 'svg';
+            $main_mime = 'image/svg+xml';
+        } elseif ( $use_webp ) {
+            $main_ext  = 'webp';
+            $main_mime = 'image/webp';
+        } else {
+            if ( $ext === 'webp' ) {
+                // Auf PNG zurückfallen, wenn WebP nicht unterstützt wird aber WebP als Quelle
+                $main_ext  = 'png';
+                $main_mime = 'image/png';
+            } else {
+                $main_ext  = $ext; // png/jpg/jpeg
+                // Sicheres MIME bestimmen
+                $main_mime = in_array( $ext, array('png','jpg','jpeg'), true ) ? ( $ext === 'png' ? 'image/png' : 'image/jpeg' ) : $file['type'];
+            }
+        }
+        
+        $main_image_path = $floor_dir . '/map.' . $main_ext;
+        $editor = wp_get_image_editor( $source_path );
 
-        // image_url in der Datenbank aktualisieren
-        WP_Floormap_Database::update_floor( $floor_id, array( 'image_url' => $url ) );
+        if ( ! is_wp_error( $editor ) ) {
+            // Gesamtansicht speichern (evtl. verkleinert für Performance - nur bei Rastergrafiken)
+            if ( $ext !== 'svg' ) {
+                $max_dim = 2000; // Etwas höherer Wert als beim Hybrid-Laden, da wir jetzt nur ein Bild haben
+                if ( $width > $max_dim || $height > $max_dim ) {
+                    $editor->resize( $max_dim, $max_dim, false );
+                }
+                $editor->save( $main_image_path, $main_mime );
+            } else {
+                // SVG wurde bereits optimiert im temp-file
+                move_uploaded_file( $source_path, $main_image_path );
+            }
+        } else {
+            // Fallback falls wp_get_image_editor fehlschlägt (z.B. SVG oder WebP-Support fehlt)
+            if ( $ext === 'svg' ) {
+                move_uploaded_file( $source_path, $main_image_path );
+            } elseif ( $ext === 'webp' ) {
+                // Einfach rüberschieben
+                move_uploaded_file( $source_path, $main_image_path );
+            } else {
+                 return new WP_Error( 'editor_error', 'Bild konnte nicht verarbeitet werden.', array( 'status' => 500 ) );
+            }
+        }
+
+        $filename = basename( $main_image_path );
+        // Cache-Busting anfügen (Query-String), damit Browser nicht altes Bild cachen
+        $url_noq = $dirs['maps_url'] . '/floor_' . $floor_id . '/' . $filename;
+        $url     = $url_noq . '?v=' . time();
+
+        // Datenbank aktualisieren
+        WP_Floormap_Database::update_floor( $floor_id, array( 
+            'image_url' => $url,
+            'width'     => $width,
+            'height'    => $height
+        ) );
 
         return rest_ensure_response( array(
-            'success'  => true,
-            'filename' => $filename,
-            'url'      => $url,
+            'success'   => true,
+            'filename'  => $filename,
+            'url'       => $url,
+            'width'     => $width,
+            'height'    => $height
         ) );
     }
 

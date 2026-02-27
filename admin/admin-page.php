@@ -245,7 +245,14 @@ $maps_url    = $upload_dirs['maps_url'];
 
 <!-- ===== MODAL: STOCKWERK BEARBEITEN ===== -->
 <div id="fm-floor-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:8px; padding:32px; width:480px; max-width:95vw; max-height:90vh; overflow-y:auto;">
+    <div style="background:#fff; border-radius:8px; padding:32px; width:480px; max-width:95vw; max-height:90vh; overflow-y:auto; position:relative;">
+        <!-- Lade-Overlay -->
+        <div id="fm-floor-modal-processing" class="fm-processing-overlay" style="display:none;">
+            <div class="fm-spinner"></div>
+            <div style="font-weight:600; color:#2271b1;">Bild wird verarbeitet...</div>
+            <div style="font-size:12px; opacity:0.7; margin-top:4px;">Dies kann bei großen Bildern einen Moment dauern.</div>
+        </div>
+
         <h2 id="fm-floor-modal-title" style="margin-top:0;">Stockwerk</h2>
         <input type="hidden" id="fm-floor-original-id">
 
@@ -273,7 +280,7 @@ $maps_url    = $upload_dirs['maps_url'];
                     <label class="button" for="fm-floor-map-upload" style="cursor:pointer;">Bild hochladen / ersetzen</label>
                     <input type="file" id="fm-floor-map-upload" accept=".jpg,.jpeg,.png,.webp,.svg,image/jpeg,image/png,image/webp,image/svg+xml" style="display:none;" onchange="fmFloorMapSelected(this)">
                     <span id="fm-floor-map-upload-name" style="margin-left:8px; font-size:12px; opacity:0.7;"></span>
-                    <p class="description">Unterstützte Formate: JPG, PNG, WebP, SVG. Das neue Bild ersetzt das bisherige.</p>
+                    <p class="description">Unterstützte Formate: JPG, PNG, WebP, SVG. SVGs werden automatisch für bessere Performance optimiert.</p>
                 </td>
             </tr>
             <tr>
@@ -287,11 +294,11 @@ $maps_url    = $upload_dirs['maps_url'];
             </tr>
             <tr>
                 <th><label for="fm-floor-width">Breite (px)</label></th>
-                <td><input type="number" id="fm-floor-width" class="regular-text" value="0"></td>
+                <td><input type="number" id="fm-floor-width" class="regular-text" value="0"> <p class="description">Wird beim Upload automatisch ermittelt, kann aber manuell korrigiert werden.</p></td>
             </tr>
             <tr>
                 <th><label for="fm-floor-height">Höhe (px)</label></th>
-                <td><input type="number" id="fm-floor-height" class="regular-text" value="0"></td>
+                <td><input type="number" id="fm-floor-height" class="regular-text" value="0"> <p class="description">Wird beim Upload automatisch ermittelt, kann aber manuell korrigiert werden.</p></td>
             </tr>
         </table>
 
@@ -545,6 +552,9 @@ function fmCloseFloorModal() {
 
 async function fmSaveFloor() {
     var originalId = document.getElementById('fm-floor-original-id').value;
+    var uploadInput = document.getElementById('fm-floor-map-upload');
+    var processingOverlay = document.getElementById('fm-floor-modal-processing');
+    
     var payload = {
         label:     document.getElementById('fm-floor-label').value,
         name:      document.getElementById('fm-floor-name').value,
@@ -558,55 +568,72 @@ async function fmSaveFloor() {
         return;
     }
 
-    // 1. Stockwerk speichern (anlegen oder aktualisieren)
-    var method   = originalId ? 'PUT' : 'POST';
-    var endpoint = originalId ? '/floors/' + originalId : '/floors';
-    var result   = await fmApi(method, endpoint, payload);
-
-    if (!result.success) {
-        fmFloorFeedback('Fehler: ' + (result.message || 'Unbekannter Fehler'), false);
-        return;
+    // Wenn ein Bild hochgeladen wird, zeigen wir den Spinner
+    var isUploading = uploadInput.files && uploadInput.files[0];
+    if (isUploading) {
+        processingOverlay.style.display = 'flex';
     }
 
-    // 2. Bild hochladen, falls eine Datei ausgewählt wurde
-    var uploadInput = document.getElementById('fm-floor-map-upload');
-    var targetId = originalId ? parseInt(originalId) : (result.id || null);
+    try {
+        // 1. Stockwerk speichern (anlegen oder aktualisieren)
+        var method   = originalId ? 'PUT' : 'POST';
+        var endpoint = originalId ? '/floors/' + originalId : '/floors';
+        var result   = await fmApi(method, endpoint, payload);
 
-    // 3. Falls "Standard-Stockwerk" angehakt ist, Config aktualisieren
-    if (document.getElementById('fm-floor-is-default').checked && targetId) {
-        await fmApi('POST', '/config', { key: 'defaultFloorId', value: targetId });
-    } else if (!document.getElementById('fm-floor-is-default').checked && targetId && parseInt(WPFloormap.appConfig.defaultFloorId) === targetId) {
-        // Falls es der Standard war und jetzt abgehakt wurde -> auf 0 setzen oder so lassen? 
-        // User sagt: "indem man das gewünschte stockwerk bearbeitet und dort eine haken setzt".
-        // Wir lassen es mal so, dass man es nur aktiv setzen kann. 
-        // Wenn man es abhakt, setzen wir es auf 0 (kein Standard).
-        await fmApi('POST', '/config', { key: 'defaultFloorId', value: 0 });
-    }
-
-    if (uploadInput.files && uploadInput.files[0]) {
-        if (!targetId) {
-            fmFloorFeedback('Stockwerk gespeichert, aber ID für den Bild-Upload fehlt.', false);
-            fmLoadFloors();
+        if (!result.success) {
+            fmFloorFeedback('Fehler: ' + (result.message || 'Unbekannter Fehler'), false);
+            processingOverlay.style.display = 'none';
             return;
         }
-        var form = new FormData();
-        form.append('map', uploadInput.files[0]);
-        var uploadRes = await fetch(WPFloormap.apiBase + '/floors/' + targetId + '/map-upload', {
-            method: 'POST',
-            headers: { 'X-WP-Nonce': WPFloormap.nonce },
-            body: form
-        });
-        var uploadData = await uploadRes.json();
-        if (!uploadData.success) {
-            fmFloorFeedback('Stockwerk gespeichert, aber Bild-Upload fehlgeschlagen: ' + (uploadData.message || 'Fehler'), false);
-            fmLoadFloors();
-            return;
-        }
-    }
 
-    fmCloseFloorModal();
-    fmNotice('Stockwerk gespeichert.');
-    fmLoadFloors();
+        var targetId = originalId ? parseInt(originalId) : (result.id || null);
+
+        // 2. Falls "Standard-Stockwerk" angehakt ist, Config aktualisieren
+        if (document.getElementById('fm-floor-is-default').checked && targetId) {
+            await fmApi('POST', '/config', { key: 'defaultFloorId', value: targetId });
+        } else if (!document.getElementById('fm-floor-is-default').checked && targetId && parseInt(WPFloormap.appConfig.defaultFloorId) === targetId) {
+            await fmApi('POST', '/config', { key: 'defaultFloorId', value: 0 });
+        }
+
+        // 3. Bild hochladen, falls eine Datei ausgewählt wurde
+        if (isUploading) {
+            if (!targetId) {
+                fmFloorFeedback('Stockwerk gespeichert, aber ID für den Bild-Upload fehlt.', false);
+                fmLoadFloors();
+                processingOverlay.style.display = 'none';
+                return;
+            }
+            var form = new FormData();
+            form.append('map', uploadInput.files[0]);
+            var uploadRes = await fetch(WPFloormap.apiBase + '/floors/' + targetId + '/map-upload', {
+                method: 'POST',
+                headers: { 'X-WP-Nonce': WPFloormap.nonce },
+                body: form
+            });
+            var uploadData = await uploadRes.json();
+
+            if (!uploadData.success) {
+                fmFloorFeedback('Stockwerk gespeichert, aber Bild-Upload fehlgeschlagen: ' + (uploadData.message || 'Fehler'), false);
+                fmLoadFloors();
+                processingOverlay.style.display = 'none';
+                return;
+            }
+            // Neue Maße in die Felder übernehmen (optional, da wir eh schließen)
+            document.getElementById('fm-floor-width').value = uploadData.width || 0;
+            document.getElementById('fm-floor-height').value = uploadData.height || 0;
+        }
+
+        // Erfolg
+        fmCloseFloorModal();
+        fmNotice('Stockwerk gespeichert.');
+        fmLoadFloors();
+        
+    } catch (err) {
+        console.error(err);
+        fmFloorFeedback('Ein unerwarteter Fehler ist aufgetreten.', false);
+    } finally {
+        processingOverlay.style.display = 'none';
+    }
 }
 
 async function fmDeleteFloor() {

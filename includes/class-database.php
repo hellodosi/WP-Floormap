@@ -165,10 +165,16 @@ class WP_Floormap_Database {
         global $wpdb;
         $table = $wpdb->prefix . self::TABLE_FLOORS;
 
-        // Bilddatei vom Dateisystem löschen
+        // Bilder löschen
+        $dirs = wp_floormap_upload_dir();
+        $floor_dir = $dirs['maps'] . '/floor_' . $id;
+        if ( file_exists( $floor_dir ) ) {
+            self::recursive_rmdir( $floor_dir );
+        }
+
+        // Falls es noch alte Dateien im Hauptordner gibt (aus der Zeit vor dem Tiling-Update)
         $floor = self::get_floor_by_id( $id );
         if ( $floor && ! empty( $floor['image_url'] ) ) {
-            $dirs = wp_floormap_upload_dir();
             $filename = basename( $floor['image_url'] );
             $path = $dirs['maps'] . '/' . $filename;
             if ( file_exists( $path ) ) {
@@ -292,7 +298,7 @@ class WP_Floormap_Database {
         wp_floormap_ensure_upload_dirs();
     }
 
-    private static function recursive_rmdir( $dir ) {
+    public static function recursive_rmdir( $dir ) {
         if ( is_dir( $dir ) ) {
             $objects = scandir( $dir );
             foreach ( $objects as $object ) {
