@@ -38,7 +38,8 @@ jobs:
           bundler-cache: true
           working-directory: docs
       - name: Build with Jekyll
-        run: bundle exec jekyll build
+        run: |
+          bundle exec jekyll build
         working-directory: docs
         env:
           JEKYLL_ENV: production

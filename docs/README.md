@@ -15,4 +15,10 @@ Um die Dokumentation lokal mit Jekyll zu testen:
 3. `bundle exec jekyll serve`
 
 ---
+### Wichtige Informationen zum Theme
+- Das Theme wird per `jekyll-remote-theme` geladen. Es müssen **keine** Theme-Dateien im Repository vorhanden sein.
+- Stellen Sie sicher, dass in den GitHub Repository-Einstellungen unter **Settings > Pages** die Build-Quelle auf **GitHub Actions** steht.
+- Der Build wird automatisch durch `.github/workflows/static.yml` gesteuert.
+
+---
 *Hinweis: Wenn das Theme online nicht korrekt angezeigt wird, stellen Sie sicher, dass alle Assets über HTTPS geladen werden und das `jekyll-remote-theme` Plugin im GitHub-Workflow korrekt ausgeführt wird (siehe `.github/workflows/static.yml`).*

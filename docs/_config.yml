@@ -27,6 +27,13 @@ nav:
 # GitHub Repository Link
 github_url: https://github.com/domin/WP-Floormap
 
+# Layout settings
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
 # Exclude files from Jekyll processing
 exclude:
   - Gemfile
@@ -34,6 +41,10 @@ exclude:
   - vendor
   - .idea
   - .junie
+  - node_modules
+  - .sass-cache
+  - .jekyll-cache
+  - .jekyll-metadata
   - ../admin
   - ../includes
   - ../assets
