@@ -13,3 +13,6 @@ Um die Dokumentation lokal mit Jekyll zu testen:
 1. `cd docs`
 2. `bundle install`
 3. `bundle exec jekyll serve`
+
+---
+*Hinweis: Wenn das Theme online nicht korrekt angezeigt wird, stellen Sie sicher, dass alle Assets über HTTPS geladen werden und das `jekyll-remote-theme` Plugin im GitHub-Workflow korrekt ausgeführt wird (siehe `.github/workflows/static.yml`).*

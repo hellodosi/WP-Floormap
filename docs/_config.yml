@@ -10,6 +10,8 @@ baseurl: "" # the subpath of your site, e.g. /blog
 plugins:
   - jekyll-remote-theme
   - jekyll-seo-tag
+  - jekyll-feed
+  - jekyll-sitemap
 
 # Navigation (für das Theme spezifisch)
 nav:
