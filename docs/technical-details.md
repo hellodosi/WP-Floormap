@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Technische Details
+toc: true
 ---
 
 # Technische Details

@@ -5,6 +5,7 @@ remote_theme: tomjoht/documentation-theme-jekyll
 # Site settings
 url: "https://floormap.dosimo.de" # the base hostname & protocol for your site, e.g. http://example.com
 baseurl: "" # the subpath of your site, e.g. /blog
+permalink: pretty
 
 # Plugins
 plugins:
@@ -27,7 +28,7 @@ nav:
     url: /technical-details/
 
 # GitHub Repository Link
-github_url: https://github.com/domin/WP-Floormap
+github_url: https://github.com/hellodosi/WP-Floormap
 
 # Layout settings
 defaults:
@@ -47,11 +48,3 @@ exclude:
   - .sass-cache
   - .jekyll-cache
   - .jekyll-metadata
-  - ../admin
-  - ../includes
-  - ../assets
-  - ../my-assets
-  - ../todo.md
-  - ../wp-floormap.php
-  - ../uninstall.php
-  - ../plugin-update-checker

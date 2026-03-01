@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Home
+toc: true
 ---
 
 # Willkommen zu WP Floormap
@@ -14,4 +15,4 @@ Interaktive Gebäudekarte als WordPress-Plugin.
 - **SVG-Support**: Automatische Bereinigung und Optimierung von SVGs für beste Qualität.
 - **Elementor-Integration**: Eigenes Widget für den Elementor Page Builder.
 
-Schauen Sie sich die [Installation](/installation/) an, um loszulegen.
+Schauen Sie sich die [Installation]({{ site.baseurl }}/installation/) an, um loszulegen.
