@@ -240,6 +240,7 @@ class WP_Floormap_API {
             'defaultFloorId'        => (int) WP_Floormap_Database::get_config( 'defaultFloorId', 0 ),
             'labelZoomThreshold'    => (float) WP_Floormap_Database::get_config( 'labelZoomThreshold', 0 ),
             'showAttribution'       => WP_Floormap_Database::get_config( 'showAttribution', 'true' ),
+            'showPluginAttribution' => WP_Floormap_Database::get_config( 'showPluginAttribution', 'true' ),
             'keepDataOnUninstall'   => WP_Floormap_Database::get_config( 'keepDataOnUninstall', 'true' ),
             'globalColors'          => json_decode( $global_colors_raw, true ) ?: array(),
             'floors'                => $floors,
@@ -425,7 +426,7 @@ class WP_Floormap_API {
             return new WP_Error( 'missing_data', 'key und value erforderlich', array( 'status' => 400 ) );
         }
 
-        $allowed = array( 'globalColors', 'defaultFloorId', 'labelZoomThreshold', 'showAttribution', 'keepDataOnUninstall' );
+        $allowed = array( 'globalColors', 'defaultFloorId', 'labelZoomThreshold', 'showAttribution', 'showPluginAttribution', 'keepDataOnUninstall' );
         if ( ! in_array( $data['key'], $allowed, true ) ) {
             return new WP_Error( 'invalid_key', 'Unbekannter Config-Key', array( 'status' => 400 ) );
         }

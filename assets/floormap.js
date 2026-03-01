@@ -189,6 +189,13 @@ function WPFloormapInit(mapId, APP_CONFIG, API_BASE, THEME, INITIAL_FIND, IS_DEV
 
     map = L.map(mapId, mapOptions);
 
+    if (showAttr) {
+        var showPluginAttr = APP_CONFIG.showPluginAttribution !== undefined ? (APP_CONFIG.showPluginAttribution === "true" || APP_CONFIG.showPluginAttribution === true) : true;
+        if (showPluginAttr) {
+            map.attributionControl.addAttribution('<a href="https://github.com/hellodosi/WP-Floormap" target="_blank">WP-Floormap-Plugin</a>');
+        }
+    }
+
     map.createPane('decorativePane'); map.getPane('decorativePane').style.zIndex = 445; map.getPane('decorativePane').style.pointerEvents = 'none';
     map.createPane('polygonPane');    map.getPane('polygonPane').style.zIndex = 450;
     map.createPane('pointPane');      map.getPane('pointPane').style.zIndex = 460;

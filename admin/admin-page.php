@@ -126,6 +126,23 @@ $maps_url    = $upload_dirs['maps_url'];
                 </td>
             </tr>
             <tr>
+                <th><label for="fm-show-plugin-attribution">Plugin Attribution</label></th>
+                <td>
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" id="fm-show-plugin-attribution" style="width:20px; height:20px;">
+                        <span>"WP-Floormap-Plugin" in der Karte anzeigen</span>
+                    </label>
+                    <div id="fm-plugin-attribution-notice" style="display:none; margin-top:12px; padding:12px; border:1px solid #0073aa; background:#f0f6fb; border-radius:4px; max-width:600px;">
+                        <p style="margin:0; font-size:13px; line-height:1.5;">
+                            Vielen Dank, dass Sie das Plugin nutzen! Wenn Sie die Plugin-Attribution ausblenden möchten, freuen wir uns über eine kleine Spende, um die Weiterentwicklung zu unterstützen:
+                            <br><br>
+                            <a href="https://ko-fi.com/dosimo" target="_blank" rel="noopener" class="button">Spende via Ko-fi</a>
+                            <a href="https://paypal.me/dosi" target="_blank" rel="noopener" class="button">Spende via PayPal</a>
+                        </p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
                 <th><label for="fm-keep-on-uninstall">Daten bei Deinstallation behalten</label></th>
                 <td>
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
@@ -673,12 +690,19 @@ function fmLoadSettings() {
         document.getElementById('fm-show-attribution').checked = showAttr;
         document.getElementById('fm-attribution-notice').style.display = showAttr ? 'none' : 'block';
 
+        var showPluginAttr = data.showPluginAttribution !== undefined ? (data.showPluginAttribution === "true" || data.showPluginAttribution === true) : true;
+        document.getElementById('fm-show-plugin-attribution').checked = showPluginAttr;
+        document.getElementById('fm-plugin-attribution-notice').style.display = showPluginAttr ? 'none' : 'block';
+
         var keepOnUninstall = data.keepDataOnUninstall !== undefined ? (data.keepDataOnUninstall === "true" || data.keepDataOnUninstall === true) : true;
         var keepCb = document.getElementById('fm-keep-on-uninstall');
         if (keepCb) keepCb.checked = keepOnUninstall;
 
         document.getElementById('fm-show-attribution').onchange = function() {
             document.getElementById('fm-attribution-notice').style.display = this.checked ? 'none' : 'block';
+        };
+        document.getElementById('fm-show-plugin-attribution').onchange = function() {
+            document.getElementById('fm-plugin-attribution-notice').style.display = this.checked ? 'none' : 'block';
         };
     });
 }
@@ -786,13 +810,15 @@ async function fmSaveColors() {
 async function fmSaveSettings() {
     var threshold = parseFloat(document.getElementById('fm-zoom-threshold').value) || 0;
     var showAttr = document.getElementById('fm-show-attribution').checked;
+    var showPluginAttr = document.getElementById('fm-show-plugin-attribution').checked;
     var keepOnUninstall = document.getElementById('fm-keep-on-uninstall').checked;
     
     var res1 = await fmApi('POST', '/config', { key: 'labelZoomThreshold', value: threshold });
     var res2 = await fmApi('POST', '/config', { key: 'showAttribution', value: showAttr });
+    var resP = await fmApi('POST', '/config', { key: 'showPluginAttribution', value: showPluginAttr });
     var res3 = await fmApi('POST', '/config', { key: 'keepDataOnUninstall', value: keepOnUninstall });
     
-    if (res1.success && res2.success && res3.success) {
+    if (res1.success && res2.success && resP.success && res3.success) {
         fmNotice('Einstellungen gespeichert.');
     } else {
         fmNotice('Fehler beim Speichern der Einstellungen.', 'error');

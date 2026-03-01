@@ -141,6 +141,7 @@ class WP_Floormap_Admin {
                 'defaultFloorId'     => (int) WP_Floormap_Database::get_config( 'defaultFloorId', 0 ),
                 'labelZoomThreshold' => (float) WP_Floormap_Database::get_config( 'labelZoomThreshold', 0 ),
                 'showAttribution'    => WP_Floormap_Database::get_config( 'showAttribution', 'true' ),
+                'showPluginAttribution' => WP_Floormap_Database::get_config( 'showPluginAttribution', 'true' ),
                 'globalColors'       => json_decode( $global_colors_raw, true ) ?: array(),
                 'floors'             => $floors,
             ),

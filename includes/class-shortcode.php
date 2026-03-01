@@ -83,6 +83,7 @@ class WP_Floormap_Shortcode {
             'defaultFloorId'     => (int) WP_Floormap_Database::get_config( 'defaultFloorId', 0 ),
             'labelZoomThreshold' => (float) WP_Floormap_Database::get_config( 'labelZoomThreshold', 0 ),
             'showAttribution'    => WP_Floormap_Database::get_config( 'showAttribution', 'true' ),
+            'showPluginAttribution' => WP_Floormap_Database::get_config( 'showPluginAttribution', 'true' ),
             'globalColors'       => json_decode( $global_colors_raw, true ) ?: array(),
             'floors'             => $floors,
         );
@@ -95,6 +96,12 @@ class WP_Floormap_Shortcode {
         $config_json   = wp_json_encode( $app_config );
         $api_base      = esc_url( rest_url( 'wp-floormap/v1' ) );
         $theme         = esc_attr( $atts['theme'] );
+        
+        // GET-Parameter theme überschreibt das Shortcode-Attribut
+        if ( isset( $_GET['theme'] ) && in_array( $_GET['theme'], array( 'light', 'dark', 'auto' ) ) ) {
+            $theme = esc_attr( $_GET['theme'] );
+        }
+
         $height        = esc_attr( $atts['height'] );
         $initial_find  = esc_attr( $atts['find'] );
 

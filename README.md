@@ -20,8 +20,15 @@ Interaktive Gebäudekarte als WordPress-Plugin.
 Verwenden Sie den Shortcode `[wp_floormap]`, um die Karte auf einer Seite anzuzeigen.
 Optionale Attribute:
 - `floor`: ID des Stockwerks, das initial angezeigt werden soll.
-- `theme`: `light` oder `dark` (Standard: folgt Systemeinstellung).
+- `theme`: `light` oder `dark` (Standard: folgt Systemeinstellung). Der Theme-Modus kann auch über den GET-Parameter `?theme=light` oder `?theme=dark` in der URL überschrieben werden.
 - `find`: ID eines Elements, das initial fokussiert werden soll.
+
+### Konfiguration
+In den Plugin-Einstellungen können verschiedene Optionen angepasst werden:
+- **Label-Zoom-Schwellwert**: Bestimmt, ab welchem Zoom-Level Raumbeschriftungen eingeblendet werden.
+- **Leaflet Attribution**: Ermöglicht das Ein- oder Ausblenden des Standard-Leaflet-Hinweises. (Nur global in den Einstellungen möglich, nicht pro Shortcode).
+- **Plugin Attribution**: Ermöglicht das Ein- oder Ausblenden des Hinweises "WP-Floormap-Plugin" in der Kartenecke. (Nur global in den Einstellungen möglich). Bei Deaktivierung freuen wir uns über eine kleine Spende zur Unterstützung des Projekts.
+- **Daten bei Deinstallation behalten**: Verhindert das Löschen von Kartendaten beim Entfernen des Plugins.
 
 ### Elementor
 Ein Elementor-Widget steht zur Verfügung, wenn Elementor installiert ist.
