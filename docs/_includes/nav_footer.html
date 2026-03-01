@@ -1,2 +1,14 @@
-<!-- Google Translate Widget Container -->
-<div id="google_translate_element" style="padding-top: 10px; border-top: 1px solid #eee;"></div>
+<!-- Google Translate Widget -->
+<div id="google_translate_element"></div>
+<!-- Google Translate Script -->
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'de',
+            includedLanguages: 'en,es,fr,nl', // Customize this list
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
