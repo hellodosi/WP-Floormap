@@ -1,7 +1,7 @@
 ---
-layout: page
+layout: default
 title: Installation
-toc: true
+nav_order: 2
 ---
 
 # Installation

@@ -1,7 +1,7 @@
 ---
-layout: page
+layout: default
 title: Home
-toc: true
+nav_order: 1
 ---
 
 # Willkommen zu WP Floormap

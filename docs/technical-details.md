@@ -1,7 +1,7 @@
 ---
-layout: page
+layout: default
 title: Technische Details
-toc: true
+nav_order: 4
 ---
 
 # Technische Details

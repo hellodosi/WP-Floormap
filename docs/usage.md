@@ -1,7 +1,7 @@
 ---
-layout: page
+layout: default
 title: Verwendung
-toc: true
+nav_order: 3
 ---
 
 # Verwendung
