@@ -34,11 +34,12 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1' # Or your preferred version
+          ruby-version: '3.1'
           bundler-cache: true
           working-directory: docs
       - name: Build with Jekyll
         run: |
+          bundle update
           bundle exec jekyll build
         working-directory: docs
         env:
