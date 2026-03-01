@@ -1,0 +1,42 @@
+title: WP Floormap
+description: Interaktive Gebäudekarte als WordPress-Plugin.
+remote_theme: tomjoht/documentation-theme-jekyll
+
+# Site settings
+url: "https://floormap.dosimo.de" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "" # the subpath of your site, e.g. /blog
+
+# Plugins
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
+
+# Navigation (für das Theme spezifisch)
+nav:
+  - title: Home
+    url: /
+  - title: Installation
+    url: /installation/
+  - title: Verwendung
+    url: /usage/
+  - title: Technische Details
+    url: /technical-details/
+
+# GitHub Repository Link
+github_url: https://github.com/domin/WP-Floormap
+
+# Exclude files from Jekyll processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - .idea
+  - .junie
+  - ../admin
+  - ../includes
+  - ../assets
+  - ../my-assets
+  - ../todo.md
+  - ../wp-floormap.php
+  - ../uninstall.php
+  - ../plugin-update-checker
