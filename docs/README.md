@@ -16,10 +16,10 @@ Um die Dokumentation lokal mit Jekyll zu testen:
 
 ---
 ### Wichtige Informationen zum Theme
-- Das Theme wird per `jekyll-remote-theme` geladen. Es müssen **keine** Theme-Dateien im Repository vorhanden sein.
+- Das Theme wird per `jekyll-remote-theme` geladen. Es müssen **keine** Theme-Dateien im Repository vorhanden sein. GitHub holt sich die aktuellen Dateien direkt vom Theme-Repository (`tomjoht/documentation-theme-jekyll`).
 - Bei Fehlern wie "exit code 6" während des `bundle`-Vorgangs im CI-Build: Stellen Sie sicher, dass keine Versionskonflikte im `Gemfile` vorliegen (z.B. keine explizite `jekyll` Version, wenn `github-pages` genutzt wird).
 - Stellen Sie sicher, dass in den GitHub Repository-Einstellungen unter **Settings > Pages** die Build-Quelle auf **GitHub Actions** steht.
-- Der Build wird automatisch durch `.github/workflows/static.yml` gesteuert.
+- Der Build wird automatisch durch `.github/workflows/static.yml` gesteuert. Falls das Design fehlt, prüfen Sie im Build-Log (Actions-Tab), ob `jekyll-remote-theme` erfolgreich geladen wurde.
 
 ---
 *Hinweis: Wenn das Theme online nicht korrekt angezeigt wird, stellen Sie sicher, dass alle Assets über HTTPS geladen werden und das `jekyll-remote-theme` Plugin im GitHub-Workflow korrekt ausgeführt wird (siehe `.github/workflows/static.yml`).*
