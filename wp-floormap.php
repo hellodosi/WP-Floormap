@@ -3,7 +3,7 @@
  * Plugin Name: WP Floormap
  * Plugin URI:  https://github.com/hellodosi/WP-Floormap
  * Description: Interaktive Gebäudekarte als WordPress-Plugin. Stockwerke und Kartenelemente werden in der WordPress-Datenbank gespeichert. Die Karte kann als Shortcode, Widget oder Elementor-Widget eingebunden werden.
- * Version:     0.0.0
+ * Version:     0.0.1
  * Author:      Dominik Scharrer
  * License:     GPL-2.0+
  * Text Domain: wp-floormap
