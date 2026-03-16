@@ -1,0 +1,64 @@
+name: Package WordPress Plugin
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create ZIP artifact
+        run: |
+          # ZIP-Dateiname festlegen
+          ZIP_NAME="wp-floormap.zip"
+          
+          # Ordnername im ZIP (Plugin-Slug)
+          PLUGIN_SLUG="wp-floormap"
+          
+          # Temporäres Verzeichnis für den Build erstellen
+          mkdir -p $PLUGIN_SLUG
+          
+          # Alle Dateien außer den ausgeschlossenen kopieren
+          # Ausschluss gemäß Guidelines: my-assets und todo.md
+          # Sowie .git, .github und andere Entwicklungs-Dateien
+          rsync -av . $PLUGIN_SLUG \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude "my-assets" \
+            --exclude "todo.md" \
+            --exclude "docs" \
+            --exclude ".idea" \
+            --exclude "*.zip" \
+            --exclude ".gitignore"
+
+          # Hinweis: README.md bleibt drin, falls jemand das ZIP manuell entpackt.
+          # Falls für WordPress.org eine readme.txt benötigt wird, müsste diese vorhanden sein.
+          
+          # ZIP erstellen
+          zip -r $ZIP_NAME $PLUGIN_SLUG
+          
+          echo "ZIP_PATH=$ZIP_NAME" >> $GITHUB_ENV
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wp-floormap-plugin
+          path: wp-floormap.zip
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: wp-floormap.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
